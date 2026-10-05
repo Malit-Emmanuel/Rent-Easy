@@ -1,0 +1,29 @@
+name: ci
+on: [push, pull_request]
+jobs:
+  api:
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: postgis/postgis:16-3.4
+        env: { POSTGRES_USER: khp, POSTGRES_PASSWORD: khp, POSTGRES_DB: khp }
+        ports: ["5432:5432"]
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+    env:
+      DATABASE_URL: postgres://khp:khp@localhost:5432/khp
+      JWT_SECRET: ci-only-jwt-secret-0123456789abcdef0123456789
+      OTP_PEPPER: ci-only-otp-pepper-0123456789abcdef0123456789
+      REDIS_URL: redis://localhost:6379
+      NODE_ENV: test
+    defaults: { run: { working-directory: apps/api } }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: 20, cache: npm, cache-dependency-path: apps/api/package-lock.json }
+      - run: npm ci
+      - run: npm run build
+      - run: npm run migrate
+      - run: npm test            # includes DB and HTTP integration tests
+      - run: npm audit --audit-level=high

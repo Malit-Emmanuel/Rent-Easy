@@ -1,0 +1,4 @@
+# Address of the NestJS API (server-side only; never exposed to the browser)
+API_URL=http://localhost:3000
+# Set to "false" only for local http testing
+COOKIE_SECURE=true
