@@ -1,0 +1,9 @@
+{
+  "regions": ["cpt1"],
+  "functions": { "api/index.ts": { "maxDuration": 30 } },
+  "rewrites": [{ "source": "/(.*)", "destination": "/api/index" }],
+  "crons": [
+    { "path": "/internal/cron/expire-verifications", "schedule": "0 2 * * *" },
+    { "path": "/internal/cron/purge-auth-data", "schedule": "0 3 * * *" }
+  ]
+}
